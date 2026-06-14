@@ -55,3 +55,11 @@ export const handleDeleteProductVariant=async(id:string)=>{
     const res=await api.delete(`/api/product/variant/${id}`)
     return res.data
 }
+export const handleGetMostPopular=async({limit,categoryName,page}:{limit:number,categoryName?:string,page:number})=>{
+    const query=new URLSearchParams()
+    if(limit){query.append("limit",limit.toString())}
+    if(page){query.append("page",page.toString())}
+    if(categoryName){query.append("categoryName",categoryName)}
+    const res=await api.get(`/api/product/most-popular?${query}`)
+    return res.data as GetProductsResponse
+}

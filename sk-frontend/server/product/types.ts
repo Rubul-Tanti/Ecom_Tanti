@@ -15,6 +15,7 @@ export interface VariantFormData {
   size: string
     sku:string,
   price: string
+  finalPrice:string
   discountPercentage: string
   discountPrice: string
   deliveryCharge:string
@@ -75,6 +76,7 @@ export interface ApiProduct {
 export type GetProductResponse = {
   message: string
   success: boolean
+  existInCart:String[]
   data: ApiProduct
 }
 export type GetProductsResponse={

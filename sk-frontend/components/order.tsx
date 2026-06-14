@@ -2,143 +2,210 @@
 
 import { useState, useMemo } from "react";
 import { Search, Star, Circle, ChevronRight } from "lucide-react";
+import useOrder from "@/hooks/use_order";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type OrderStatus = "Delivered" | "Cancelled" | "On the way" | "Returned";
+type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+
+interface ProductImage {
+  url: string;
+}
+
+interface Product {
+  name: string;
+  description: string;
+}
+
+interface ProductVariant {
+  images: ProductImage[];
+  finalPrice: number;
+  deliveryCharge: number;
+}
+
+interface OrderItem {
+  id: string;
+  productId: string;
+  productVariantId: string;
+  size: string;
+  quantity: number;
+  createdAt: string;
+  orderId: string;
+  product: Product;
+  productVariant: ProductVariant;
+}
+
+interface ApiOrder {
+  id: string;
+  status: OrderStatus;
+  currency: string;
+  paymentStatus: PaymentStatus;
+  totalAmount: number;
+  placedAt: string;
+  updatedAt: string;
+  items: OrderItem[];
+  [key: string]: any;
+}
 
 interface Order {
-  id: number;
-  name: string;
-  color?: string;
-  size?: string;
-  price: string;
+  id: string;
+  orderId: string;
+  items: OrderItem[];
   status: OrderStatus;
   statusDate: string;
   statusNote: string;
-  canReview: boolean;
-  imgSrc: string;
+  paymentStatus: PaymentStatus;
+  totalAmount: number;
+  currency: string;
   year: number;
 }
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const orders: Order[] = [
-  {
-    id: 1,
-    name: "Samsung Essential Series S3 60.4 cm (24 ...",
-    color: "Black",
-    size: "23.77953",
-    price: "₹6,854",
-    status: "Delivered",
-    statusDate: "Jan 19",
-    statusNote: "Your item has been delivered",
-    canReview: true,
-    imgSrc: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 2,
-    name: "Acer 60.45 cm (24 inch) Full HD LED Back...",
-    color: "Black",
-    size: "23.8",
-    price: "₹6,255",
-    status: "Cancelled",
-    statusDate: "Jan 17",
-    statusNote: "Your order was cancelled as per your request.",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 3,
-    name: "Medellin 38\" matt black Acoustic Guitar ...",
-    color: "Black",
-    price: "₹1,599",
-    status: "Cancelled",
-    statusDate: "Jan 02",
-    statusNote: "Your order was cancelled as per your request.",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 4,
-    name: "BLUEBERRY B-D38S 38Inch Inbuilt TrussRod...",
-    color: "Brown",
-    price: "₹2,184",
-    status: "Cancelled",
-    statusDate: "Nov 24, 2025",
-    statusNote: "Your order was cancelled as per your request.",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1525201548942-d8732f6617a0?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 5,
-    name: "FRKB 4-Pack Mini Padlock Luggage Locks w...",
-    color: "Multicolor",
-    price: "₹229",
-    status: "Cancelled",
-    statusDate: "May 11, 2025",
-    statusNote: "Your order was cancelled as per your request.",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 6,
-    name: "CASIO HL100LB Portable Basic Calculator",
-    color: "Grey",
-    size: "Small",
-    price: "₹192",
-    status: "Delivered",
-    statusDate: "Apr 12, 2025",
-    statusNote: "Your item has been delivered",
-    canReview: true,
-    imgSrc: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 7,
-    name: "Boat Rockerz 450 Wireless Headphones",
-    color: "Blue",
-    price: "₹1,299",
-    status: "On the way",
-    statusDate: "Feb 27",
-    statusNote: "Expected delivery by tomorrow",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=160&h=160&fit=crop",
-    year: 2025,
-  },
-  {
-    id: 8,
-    name: "Nike Air Max 270 Running Shoes",
-    color: "White/Black",
-    size: "UK 9",
-    price: "₹8,995",
-    status: "Returned",
-    statusDate: "Dec 15, 2024",
-    statusNote: "Return processed successfully",
-    canReview: false,
-    imgSrc: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160&h=160&fit=crop",
-    year: 2024,
-  },
-];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const statusConfig: Record<OrderStatus, { color: string; dot: string }> = {
-  Delivered: { color: "#16a34a", dot: "#16a34a" },
-  Cancelled: { color: "#dc2626", dot: "#dc2626" },
-  "On the way": { color: "#2563eb", dot: "#2563eb" },
-  Returned: { color: "#f59e0b", dot: "#f59e0b" },
+  PENDING: { color: "#f59e0b", dot: "#f59e0b" },
+  PROCESSING: { color: "#3b82f6", dot: "#3b82f6" },
+  SHIPPED: { color: "#2563eb", dot: "#2563eb" },
+  DELIVERED: { color: "#16a34a", dot: "#16a34a" },
+  CANCELLED: { color: "#dc2626", dot: "#dc2626" },
 };
+
+const paymentStatusConfig: Record<PaymentStatus, { color: string; bgColor: string }> = {
+  PAID: { color: "#16a34a", bgColor: "#dcfce7" },
+  PENDING: { color: "#f59e0b", bgColor: "#fef3c7" },
+  FAILED: { color: "#dc2626", bgColor: "#fee2e2" },
+  REFUNDED: { color: "#8b5cf6", bgColor: "#ede9fe" },
+};
+
+const getStatusNote = (status: OrderStatus): string => {
+  const notes: Record<OrderStatus, string> = {
+    PENDING: "Your order is being processed",
+    PROCESSING: "Your order is being prepared for shipment",
+    SHIPPED: "Your order is on the way",
+    DELIVERED: "Your item has been delivered",
+    CANCELLED: "Your order was cancelled",
+  };
+  return notes[status] || "Order status updated";
+};
+
+// ─── Convert API Order to Component Order ──────────────────────────────────
+
+const convertApiOrderToOrder = (apiOrder: ApiOrder): Order => {
+  const placedDate = new Date(apiOrder.placedAt);
+  const year = placedDate.getFullYear();
+  const monthDay = placedDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  return {
+    id: apiOrder.id,
+    orderId: apiOrder.id,
+    items: apiOrder.items || [],
+    status: apiOrder.status,
+    statusDate: monthDay,
+    statusNote: getStatusNote(apiOrder.status),
+    paymentStatus: apiOrder.paymentStatus,
+    totalAmount: apiOrder.totalAmount,
+    currency: apiOrder.currency,
+    year: year,
+  };
+};
+
+// ─── Order Item Row ───────────────────────────────────────────────────────────
+
+function OrderItemRow({ item, orderStatus }: { item: OrderItem; orderStatus: OrderStatus }) {
+  const itemImg = item.productVariant?.images?.[0]?.url ||
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=160&h=160&fit=crop";
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 16,
+        paddingBottom: 16,
+        borderBottom: "1px solid #f3f4f6",
+      }}
+    >
+      {/* Product image */}
+      <img
+        src={itemImg}
+        alt={item.product?.name}
+        style={{
+          width: 80,
+          height: 80,
+          objectFit: "cover",
+          borderRadius: 6,
+          flexShrink: 0,
+          background: "#f9fafb",
+          border: "1px solid #e5e7eb",
+        }}
+        draggable={false}
+      />
+
+      {/* Product details */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 14,
+            color: "#111",
+            margin: "0 0 4px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {item.product?.name}
+        </p>
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: 13,
+            color: "#888",
+            margin: "0 0 8px",
+          }}
+        >
+          Size: <strong>{item.size}</strong> | Qty: <strong>{item.quantity}</strong>
+        </p>
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: 13,
+            color: "#666",
+            margin: 0,
+          }}
+        >
+          ₹{item.productVariant?.finalPrice?.toLocaleString() || 0}
+          {item.productVariant?.deliveryCharge > 0 && (
+            <> + ₹{item.productVariant.deliveryCharge} delivery</>
+          )}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // ─── Order Row ────────────────────────────────────────────────────────────────
 
 function OrderRow({ order }: { order: Order }) {
   const cfg = statusConfig[order.status];
+  const paymentCfg = paymentStatusConfig[order.paymentStatus];
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+
+  const handlePayment = async () => {
+    setIsPaymentProcessing(true);
+    // TODO: Integrate with your payment gateway (Razorpay, Stripe, etc.)
+    console.log(`Processing payment for order: ${order.orderId}`);
+    setTimeout(() => {
+      setIsPaymentProcessing(false);
+    }, 1000);
+  };
+
+  const canReview = order.status === "DELIVERED" && order.paymentStatus === "PAID";
 
   return (
     <div
@@ -146,88 +213,100 @@ function OrderRow({ order }: { order: Order }) {
         background: "#fff",
         borderRadius: 8,
         border: "1px solid #e5e7eb",
-        padding: "20px 24px",
-        display: "flex",
-        alignItems: "center",
-        gap: 20,
-        cursor: "pointer",
+        overflow: "hidden",
         transition: "box-shadow 0.15s",
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.07)")}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "none";
+      }}
     >
-      {/* Product image */}
-      <img
-        src={order.imgSrc}
-        alt={order.name}
+      {/* Order Header */}
+      <div
         style={{
-          width: 80,
-          height: 80,
-          objectFit: "contain",
-          borderRadius: 6,
-          flexShrink: 0,
-          background: "#f9fafb",
-          padding: 4,
+          padding: "20px 24px",
+          display: "flex",
+          alignItems: "center",
+          gap: 20,
+          cursor: "pointer",
+          backgroundColor: "#f9fafb" ,
         }}
-        draggable={false}
-      />
+      >
+        {/* Order ID and Items Count */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: 15,
+              color: "#111",
+              margin: "0 0 6px",
+            }}
+          >
+            Order #{order.orderId.slice(0, 8).toUpperCase()}
+          </p>
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              color: "#888",
+              margin: 0,
+            }}
+          >
+            {order.items?.length || 0} item{order.items?.length !== 1 ? "s" : ""} • {order.statusDate}
+          </p>
+        </div>
 
-      {/* Name + meta */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p
+        {/* Payment Status Badge */}
+        <span
           style={{
-            fontFamily: "'DM Sans', sans-serif",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "6px 12px",
+            backgroundColor: paymentCfg.bgColor,
+            borderRadius: 6,
+            fontSize: 12,
             fontWeight: 600,
-            fontSize: 15,
-            color: "#111",
-            margin: "0 0 6px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            color: paymentCfg.color,
+            fontFamily: "'DM Sans', sans-serif",
+            flexShrink: 0,
           }}
         >
-          {order.name}
-        </p>
+          {order.paymentStatus}
+        </span>
+
+        {/* Price */}
         <p
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            fontSize: 13,
-            color: "#888",
+            fontWeight: 700,
+            fontSize: 16,
+            color: "#111",
+            minWidth: 100,
+            textAlign: "right",
+            flexShrink: 0,
             margin: 0,
           }}
         >
-          {[order.color && `Color: ${order.color}`, order.size && `Size: ${order.size}`]
-            .filter(Boolean)
-            .join("   ")}
+          ₹{order.totalAmount.toLocaleString()}
         </p>
-      </div>
 
-      {/* Price */}
-      <p
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontWeight: 600,
-          fontSize: 15,
-          color: "#111",
-          minWidth: 80,
-          textAlign: "right",
-          flexShrink: 0,
-        }}
-      >
-        {order.price}
-      </p>
-
-      {/* Status */}
-      <div style={{ minWidth: 240, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-          {/* Status dot */}
+        {/* Status */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            minWidth: 160,
+            flexShrink: 0,
+          }}
+        >
           <span
             style={{
               width: 9,
               height: 9,
               borderRadius: "50%",
               background: cfg.dot,
-              flexShrink: 0,
               display: "inline-block",
             }}
           />
@@ -235,58 +314,121 @@ function OrderRow({ order }: { order: Order }) {
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 700,
-              fontSize: 14,
+              fontSize: 13,
               color: cfg.color,
             }}
           >
-            {order.status} on {order.statusDate}
+            {order.status}
           </span>
         </div>
-        <p
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 12,
-            color: "#888",
-            margin: "0 0 6px 15px",
-          }}
-        >
-          {order.statusNote}
-        </p>
-        {order.canReview && (
-          <div
+
+      </div>
+
+      {/* Order Details - Expandable */}
+        <div style={{ padding: "0 24px 20px", backgroundColor: "#f9fafb" }}>
+          {/* Items List */}
+          <div style={{ marginBottom: 16 }}>
+            {order.items?.map((item) => (
+              <OrderItemRow key={item.id} item={item} orderStatus={order.status} />
+            ))}
+          </div>
+
+          {/* Status Note */}
+          <p
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              marginLeft: 15,
-              cursor: "pointer",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              color: "#666",
+              margin: "0 0 16px",
+              paddingTop: 12,
+              borderTop: "1px solid #e5e7eb",
             }}
           >
-            <Star size={13} fill="#2563eb" color="#2563eb" />
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                color: "#2563eb",
-                fontWeight: 500,
-              }}
-            >
-              Rate &amp; Review Product
-            </span>
+            {order.statusNote}
+          </p>
+
+          {/* Action Buttons */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {order.paymentStatus === "PENDING" && (
+              <button
+                onClick={handlePayment}
+                disabled={isPaymentProcessing}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 16px",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: isPaymentProcessing ? "not-allowed" : "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: "'DM Sans', sans-serif",
+                  opacity: isPaymentProcessing ? 0.7 : 1,
+                  transition: "background-color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isPaymentProcessing) {
+                    e.currentTarget.style.backgroundColor = "#1d4ed8";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2563eb";
+                }}
+              >
+                {isPaymentProcessing ? "Processing..." : "Pay Now"}
+              </button>
+            )}
+
+            {canReview && (
+              <button
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 16px",
+                  backgroundColor: "#f0f9ff",
+                  color: "#2563eb",
+                  border: "1px solid #bfdbfe",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: "'DM Sans', sans-serif",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2563eb";
+                  e.currentTarget.style.color = "#fff";
+                  e.currentTarget.style.borderColor = "#2563eb";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f0f9ff";
+                  e.currentTarget.style.color = "#2563eb";
+                  e.currentTarget.style.borderColor = "#bfdbfe";
+                }}
+              >
+                <Star size={14} fill="currentColor" />
+                Rate &amp; Review
+              </button>
+            )}
           </div>
-        )}
-      </div>
+        </div>
     </div>
   );
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-const STATUS_FILTERS: OrderStatus[] = ["On the way", "Delivered", "Cancelled", "Returned"];
+const STATUS_FILTERS: OrderStatus[] = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
 const TIME_FILTERS = ["Last 30 days", "2025", "2024", "Older"];
 
 export default function MyOrders() {
-  const [search, setSearch] = useState("");
+  const { getOrder } = useOrder();
+  const { data, isLoading } = getOrder();
+  const apiOrders = data?.orders || [];
   const [activeStatuses, setActiveStatuses] = useState<Set<string>>(new Set());
   const [activeTimes, setActiveTimes] = useState<Set<string>>(new Set());
 
@@ -296,10 +438,15 @@ export default function MyOrders() {
     return next;
   };
 
+  // Convert API orders to component orders
+  const orders: Order[] = useMemo(
+    () => (Array.isArray(apiOrders) ? apiOrders.map(convertApiOrderToOrder) : []),
+    [apiOrders]
+  );
+
   const filtered = useMemo(() => {
     return orders.filter((o) => {
-      const matchSearch =
-        !search || o.name.toLowerCase().includes(search.toLowerCase());
+      // Search in product names within items, or in order ID
 
       const matchStatus =
         activeStatuses.size === 0 || activeStatuses.has(o.status);
@@ -308,7 +455,7 @@ export default function MyOrders() {
         if (activeTimes.size === 0) return true;
         const now = new Date();
         if (activeTimes.has("Last 30 days")) {
-          const d = new Date(o.statusDate + ", 2025");
+          const d = new Date(o.statusDate + ", " + o.year);
           const diff = (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
           if (diff <= 30) return true;
         }
@@ -318,9 +465,9 @@ export default function MyOrders() {
         return false;
       })();
 
-      return matchSearch && matchStatus && matchTime;
+      return  matchStatus && matchTime;
     });
-  }, [search, activeStatuses, activeTimes]);
+  }, [ activeStatuses, activeTimes, orders]);
 
   return (
     <div
@@ -333,36 +480,7 @@ export default function MyOrders() {
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
 
-      {/* Breadcrumb */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          marginBottom: 20,
-          fontSize: 13,
-          color: "#888",
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        {["Home", "My Account", "My Orders"].map((crumb, i, arr) => (
-          <span key={crumb} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{
-                color: i === arr.length - 1 ? "#111" : "#888",
-                cursor: i < arr.length - 1 ? "pointer" : "default",
-                fontWeight: i === arr.length - 1 ? 600 : 400,
-              }}
-            >
-              {crumb}
-            </span>
-            {i < arr.length - 1 && <ChevronRight size={13} color="#bbb" />}
-          </span>
-        ))}
-      </div>
-
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 20, alignItems: "flex-start" }}>
-
         {/* ── Filters Sidebar ── */}
         <div
           style={{
@@ -470,60 +588,27 @@ export default function MyOrders() {
         {/* ── Orders Panel ── */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
 
-          {/* Search bar */}
-          <div style={{ display: "flex", gap: 10 }}>
+
+          {/* Loading state */}
+          {isLoading && (
             <div
               style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
                 background: "#fff",
+                borderRadius: 8,
                 border: "1px solid #e5e7eb",
-                borderRadius: 6,
-                padding: "0 14px",
-              }}
-            >
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search your orders here"
-                style={{
-                  flex: 1,
-                  border: "none",
-                  outline: "none",
-                  fontSize: 14,
-                  color: "#333",
-                  fontFamily: "'DM Sans', sans-serif",
-                  padding: "12px 0",
-                  background: "transparent",
-                }}
-              />
-            </div>
-            <button
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: "#2563eb",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                padding: "0 20px",
+                padding: "48px 24px",
+                textAlign: "center",
+                color: "#888",
                 fontSize: 14,
-                fontWeight: 600,
                 fontFamily: "'DM Sans', sans-serif",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
               }}
             >
-              <Search size={15} />
-              Search Orders
-            </button>
-          </div>
+              Loading orders...
+            </div>
+          )}
 
           {/* Order rows */}
-          {filtered.length === 0 ? (
+          {!isLoading && filtered.length === 0 && (
             <div
               style={{
                 background: "#fff",
@@ -538,9 +623,9 @@ export default function MyOrders() {
             >
               No orders found.
             </div>
-          ) : (
-            filtered.map((order) => <OrderRow key={order.id} order={order} />)
           )}
+
+          {!isLoading && filtered.map((order) => <OrderRow key={order.orderId} order={order} />)}
         </div>
       </div>
     </div>

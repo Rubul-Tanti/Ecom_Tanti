@@ -1,4 +1,4 @@
-import { handleAddProductImage, handleAddProductVariant, handleCreateProduct, handleDeleteProduct, handleDeleteProductVariant, handleDeleteVariantProductImage, handleGetProductById, handleGetProducts, handleUpdateProduct, handleUpdateProductVariant } from "@/server/product"
+import { handleAddProductImage, handleAddProductVariant, handleCreateProduct, handleDeleteProduct, handleDeleteProductVariant, handleDeleteVariantProductImage, handleGetProductById, handleGetProducts, handleUpdateProduct, handleUpdateProductVariant, handleGetMostPopular } from "@/server/product"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 const useProduct=()=>{
@@ -12,7 +12,8 @@ const useProduct=()=>{
     const addProductVariant=useMutation({mutationFn:handleAddProductVariant})
     const deleteProductVariant=useMutation({mutationFn:handleDeleteProductVariant})
     const deleteProduct=useMutation({mutationFn:handleDeleteProduct})
-    return {deleteProductVariant,deleteProductImage,createProduct,getProducts,getProductById,AddProductImage,deleteProduct,updateProduct,updateProductVariant,addProductVariant}
+    const getPopularProduct=(limit:number,categoryName:string,page:number)=>useQuery({queryKey:['most-popular-products',limit,categoryName,page],queryFn:()=>handleGetMostPopular({limit,categoryName,page})})
+    return {deleteProductVariant,deleteProductImage,createProduct,getProducts,getProductById,AddProductImage,deleteProduct,updateProduct,updateProductVariant,addProductVariant,getPopularProduct}
 
 }
 export default useProduct
