@@ -11,6 +11,9 @@ import cookieParser from "cookie-parser"
 import { categoryRouter } from './routes/categoryRoutes'
 import { eventRouter } from './routes/eventRoutes'
 import cartRoutes from './routes/cartRoutes'
+import { promoCodeRouter } from './routes/promoCodeRoutes'
+import addressRouter from './routes/addressRoutes'
+import orderRouter from './routes/orderRoutes'
 // import { prisma } from './db/prisma'
 dotenv.config()
 
@@ -24,7 +27,10 @@ app.use('/api/user',userRouter)
 app.use('/api/product',producRoutes)
 app.use('/api/category',categoryRouter)
 app.use("/api/event/",eventRouter)
+app.use('/api/promocode',promoCodeRouter)
 app.use("/api/cart",cartRoutes)
+app.use("/api/address/",addressRouter)
+app.use("/api/order/",orderRouter)
 app.use((req,res)=>{
     res.status(404).json({message:"Route not found"})
 })

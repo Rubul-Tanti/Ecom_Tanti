@@ -158,7 +158,7 @@ export type PromoCodeUsageGroupByOutputType = {
   _max: PromoCodeUsageMaxAggregateOutputType | null
 }
 
-type GetPromoCodeUsageGroupByPayload<T extends PromoCodeUsageGroupByArgs> = Prisma.PrismaPromise<
+export type GetPromoCodeUsageGroupByPayload<T extends PromoCodeUsageGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PromoCodeUsageGroupByOutputType, T['by']> &
       {
@@ -1368,6 +1368,11 @@ export type PromoCodeUsageFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` PromoCodeUsages.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PromoCodeUsages.
+   */
   distinct?: Prisma.PromoCodeUsageScalarFieldEnum | Prisma.PromoCodeUsageScalarFieldEnum[]
 }
 

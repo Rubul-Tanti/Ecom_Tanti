@@ -19,7 +19,6 @@ const resetPassword=async(req:Request,res:Response)=>{
         const {email,url,newPassword}=validationResult.data
         const token=HashResetPasswordToken(url)
         const user=await prisma.user.findFirst({where:{resetPasswordToken:token,resetPasswordTokenExpires:{gt:new Date()},email}})
-        console.log(user)
             if(!user){
                 return res.status(404).json({message:"reset token expired please try again"})
             }
@@ -27,7 +26,6 @@ const resetPassword=async(req:Request,res:Response)=>{
             const updatedUser=await prisma.user.update({where:{id:user.id},data:{password:hashedPassword,resetPasswordToken:null,resetPasswordTokenExpires:null},include:{_count:{select:{cart:true}}}})
             res.status(200).json({success:true,message:"password reset successfully",data:getsafeUser(updatedUser)})
         }catch(e){
-            console.log(e)
         throw new ApiError("internal server error",500)
     }
 }

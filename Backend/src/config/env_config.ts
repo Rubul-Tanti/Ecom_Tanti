@@ -21,12 +21,16 @@ const envSchema = z.object({
   CLOUDINARY_API:z.string(),
   CLOUDINARY_API_SECRET:z.string(),
   CLOUD_NAME:z.string(),
+  RAZORPAY_API_KEY:z.string()
+  ,RAZORPAY_API_SECRET:z.string()
 });
 
 const parsedEnv = envSchema.parse(process.env);
 
 export const env = {
-  frontend_url:parsedEnv.FRONTEND_URL,
+  razorpay_api_kay:parsedEnv.RAZORPAY_API_KEY
+  ,razorpay_api_secret:parsedEnv.RAZORPAY_API_SECRET
+  ,  frontend_url:parsedEnv.FRONTEND_URL,
   port: parsedEnv.PORT,
   node_env: parsedEnv.NODE_ENV,
 

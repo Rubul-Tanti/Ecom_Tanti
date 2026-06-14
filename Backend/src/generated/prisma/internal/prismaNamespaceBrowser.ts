@@ -263,10 +263,17 @@ export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagSca
 export const OrderScalarFieldEnum = {
   id: 'id',
   status: 'status',
+  currency: 'currency',
+  razorPayPaymentId: 'razorPayPaymentId',
+  razorPayOrderId: 'razorPayOrderId',
+  razorPayPaymentSignature: 'razorPayPaymentSignature',
+  paymentStatus: 'paymentStatus',
+  paymentMethod: 'paymentMethod',
   userId: 'userId',
   addressId: 'addressId',
   totalAmount: 'totalAmount',
   notes: 'notes',
+  promoCodeId: 'promoCodeId',
   placedAt: 'placedAt',
   updatedAt: 'updatedAt'
 } as const
@@ -276,12 +283,12 @@ export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof Or
 
 export const OrderItemScalarFieldEnum = {
   id: 'id',
-  orderId: 'orderId',
   productId: 'productId',
-  quantity: 'quantity',
-  unitPrice: 'unitPrice',
+  productVariantId: 'productVariantId',
   size: 'size',
-  color: 'color'
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  orderId: 'orderId'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
@@ -289,14 +296,10 @@ export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof t
 
 export const CartItemScalarFieldEnum = {
   id: 'id',
+  orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
   size: 'size',
-  productImageUrl: 'productImageUrl',
-  productName: 'productName',
-  ProductColorName: 'ProductColorName',
-  Price: 'Price',
-  deliveryCharge: 'deliveryCharge',
   productVariantId: 'productVariantId',
   userId: 'userId',
   createdAt: 'createdAt',

@@ -39,9 +39,7 @@ const handleLoginRoute = async (
 
   try {
     const { userId } = verifyToken(token)
-    console.log(userId)
     const user = await prisma.user.findUnique({ where: { publicId: userId },include:{_count:{select:{cart:true}}} })
-    console.log(user)
     if (!user) {
       res.status(401).json({ message: 'User not found' })
       return
@@ -72,7 +70,6 @@ const authorizationMiddleware = (requiredRole: UserRole[]) => {
     }
 
     const token = extractBearerToken(req)
-    console.log(token)
   if(!token&&requiredRole.length===0){
   return next()
   }

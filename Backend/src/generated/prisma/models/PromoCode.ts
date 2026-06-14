@@ -250,7 +250,7 @@ export type PromoCodeGroupByOutputType = {
   _max: PromoCodeMaxAggregateOutputType | null
 }
 
-type GetPromoCodeGroupByPayload<T extends PromoCodeGroupByArgs> = Prisma.PrismaPromise<
+export type GetPromoCodeGroupByPayload<T extends PromoCodeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PromoCodeGroupByOutputType, T['by']> &
       {
@@ -281,6 +281,7 @@ export type PromoCodeWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PromoCode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PromoCode"> | Date | string
   usages?: Prisma.PromoCodeUsageListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }
 
 export type PromoCodeOrderByWithRelationInput = {
@@ -296,6 +297,7 @@ export type PromoCodeOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   usages?: Prisma.PromoCodeUsageOrderByRelationAggregateInput
+  orders?: Prisma.OrderOrderByRelationAggregateInput
 }
 
 export type PromoCodeWhereUniqueInput = Prisma.AtLeast<{
@@ -314,6 +316,7 @@ export type PromoCodeWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PromoCode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PromoCode"> | Date | string
   usages?: Prisma.PromoCodeUsageListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }, "id" | "code">
 
 export type PromoCodeOrderByWithAggregationInput = {
@@ -365,6 +368,7 @@ export type PromoCodeCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   usages?: Prisma.PromoCodeUsageCreateNestedManyWithoutPromoCodeInput
+  orders?: Prisma.OrderCreateNestedManyWithoutPromoCodeInput
 }
 
 export type PromoCodeUncheckedCreateInput = {
@@ -380,6 +384,7 @@ export type PromoCodeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   usages?: Prisma.PromoCodeUsageUncheckedCreateNestedManyWithoutPromoCodeInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPromoCodeInput
 }
 
 export type PromoCodeUpdateInput = {
@@ -395,6 +400,7 @@ export type PromoCodeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usages?: Prisma.PromoCodeUsageUpdateManyWithoutPromoCodeNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutPromoCodeNestedInput
 }
 
 export type PromoCodeUncheckedUpdateInput = {
@@ -410,6 +416,7 @@ export type PromoCodeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usages?: Prisma.PromoCodeUsageUncheckedUpdateManyWithoutPromoCodeNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutPromoCodeNestedInput
 }
 
 export type PromoCodeCreateManyInput = {
@@ -452,6 +459,11 @@ export type PromoCodeUncheckedUpdateManyInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PromoCodeNullableScalarRelationFilter = {
+  is?: Prisma.PromoCodeWhereInput | null
+  isNot?: Prisma.PromoCodeWhereInput | null
 }
 
 export type PromoCodeCountOrderByAggregateInput = {
@@ -517,6 +529,22 @@ export type PromoCodeScalarRelationFilter = {
   isNot?: Prisma.PromoCodeWhereInput
 }
 
+export type PromoCodeCreateNestedOneWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.PromoCodeCreateWithoutOrdersInput, Prisma.PromoCodeUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.PromoCodeCreateOrConnectWithoutOrdersInput
+  connect?: Prisma.PromoCodeWhereUniqueInput
+}
+
+export type PromoCodeUpdateOneWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.PromoCodeCreateWithoutOrdersInput, Prisma.PromoCodeUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.PromoCodeCreateOrConnectWithoutOrdersInput
+  upsert?: Prisma.PromoCodeUpsertWithoutOrdersInput
+  disconnect?: Prisma.PromoCodeWhereInput | boolean
+  delete?: Prisma.PromoCodeWhereInput | boolean
+  connect?: Prisma.PromoCodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PromoCodeUpdateToOneWithWhereWithoutOrdersInput, Prisma.PromoCodeUpdateWithoutOrdersInput>, Prisma.PromoCodeUncheckedUpdateWithoutOrdersInput>
+}
+
 export type PromoCodeCreateNestedOneWithoutUsagesInput = {
   create?: Prisma.XOR<Prisma.PromoCodeCreateWithoutUsagesInput, Prisma.PromoCodeUncheckedCreateWithoutUsagesInput>
   connectOrCreate?: Prisma.PromoCodeCreateOrConnectWithoutUsagesInput
@@ -531,6 +559,82 @@ export type PromoCodeUpdateOneRequiredWithoutUsagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PromoCodeUpdateToOneWithWhereWithoutUsagesInput, Prisma.PromoCodeUpdateWithoutUsagesInput>, Prisma.PromoCodeUncheckedUpdateWithoutUsagesInput>
 }
 
+export type PromoCodeCreateWithoutOrdersInput = {
+  id?: string
+  code: string
+  amount: number
+  minOrder?: number | null
+  maxDiscount?: number | null
+  usageLimit?: number | null
+  usedCount?: number
+  isActive?: boolean
+  expiresAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usages?: Prisma.PromoCodeUsageCreateNestedManyWithoutPromoCodeInput
+}
+
+export type PromoCodeUncheckedCreateWithoutOrdersInput = {
+  id?: string
+  code: string
+  amount: number
+  minOrder?: number | null
+  maxDiscount?: number | null
+  usageLimit?: number | null
+  usedCount?: number
+  isActive?: boolean
+  expiresAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usages?: Prisma.PromoCodeUsageUncheckedCreateNestedManyWithoutPromoCodeInput
+}
+
+export type PromoCodeCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.PromoCodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PromoCodeCreateWithoutOrdersInput, Prisma.PromoCodeUncheckedCreateWithoutOrdersInput>
+}
+
+export type PromoCodeUpsertWithoutOrdersInput = {
+  update: Prisma.XOR<Prisma.PromoCodeUpdateWithoutOrdersInput, Prisma.PromoCodeUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.PromoCodeCreateWithoutOrdersInput, Prisma.PromoCodeUncheckedCreateWithoutOrdersInput>
+  where?: Prisma.PromoCodeWhereInput
+}
+
+export type PromoCodeUpdateToOneWithWhereWithoutOrdersInput = {
+  where?: Prisma.PromoCodeWhereInput
+  data: Prisma.XOR<Prisma.PromoCodeUpdateWithoutOrdersInput, Prisma.PromoCodeUncheckedUpdateWithoutOrdersInput>
+}
+
+export type PromoCodeUpdateWithoutOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  minOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usageLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usages?: Prisma.PromoCodeUsageUpdateManyWithoutPromoCodeNestedInput
+}
+
+export type PromoCodeUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  minOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usageLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usages?: Prisma.PromoCodeUsageUncheckedUpdateManyWithoutPromoCodeNestedInput
+}
+
 export type PromoCodeCreateWithoutUsagesInput = {
   id?: string
   code: string
@@ -543,6 +647,7 @@ export type PromoCodeCreateWithoutUsagesInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  orders?: Prisma.OrderCreateNestedManyWithoutPromoCodeInput
 }
 
 export type PromoCodeUncheckedCreateWithoutUsagesInput = {
@@ -557,6 +662,7 @@ export type PromoCodeUncheckedCreateWithoutUsagesInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPromoCodeInput
 }
 
 export type PromoCodeCreateOrConnectWithoutUsagesInput = {
@@ -587,6 +693,7 @@ export type PromoCodeUpdateWithoutUsagesInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUpdateManyWithoutPromoCodeNestedInput
 }
 
 export type PromoCodeUncheckedUpdateWithoutUsagesInput = {
@@ -601,6 +708,7 @@ export type PromoCodeUncheckedUpdateWithoutUsagesInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutPromoCodeNestedInput
 }
 
 
@@ -610,10 +718,12 @@ export type PromoCodeUncheckedUpdateWithoutUsagesInput = {
 
 export type PromoCodeCountOutputType = {
   usages: number
+  orders: number
 }
 
 export type PromoCodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usages?: boolean | PromoCodeCountOutputTypeCountUsagesArgs
+  orders?: boolean | PromoCodeCountOutputTypeCountOrdersArgs
 }
 
 /**
@@ -633,6 +743,13 @@ export type PromoCodeCountOutputTypeCountUsagesArgs<ExtArgs extends runtime.Type
   where?: Prisma.PromoCodeUsageWhereInput
 }
 
+/**
+ * PromoCodeCountOutputType without action
+ */
+export type PromoCodeCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderWhereInput
+}
+
 
 export type PromoCodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -647,6 +764,7 @@ export type PromoCodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
   updatedAt?: boolean
   usages?: boolean | Prisma.PromoCode$usagesArgs<ExtArgs>
+  orders?: boolean | Prisma.PromoCode$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.PromoCodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promoCode"]>
 
@@ -695,6 +813,7 @@ export type PromoCodeSelectScalar = {
 export type PromoCodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "amount" | "minOrder" | "maxDiscount" | "usageLimit" | "usedCount" | "isActive" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["promoCode"]>
 export type PromoCodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usages?: boolean | Prisma.PromoCode$usagesArgs<ExtArgs>
+  orders?: boolean | Prisma.PromoCode$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.PromoCodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PromoCodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -704,6 +823,7 @@ export type $PromoCodePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "PromoCode"
   objects: {
     usages: Prisma.$PromoCodeUsagePayload<ExtArgs>[]
+    orders: Prisma.$OrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1112,6 +1232,7 @@ readonly fields: PromoCodeFieldRefs;
 export interface Prisma__PromoCodeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   usages<T extends Prisma.PromoCode$usagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromoCode$usagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromoCodeUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orders<T extends Prisma.PromoCode$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromoCode$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1348,6 +1469,11 @@ export type PromoCodeFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Skip the first `n` PromoCodes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PromoCodes.
+   */
   distinct?: Prisma.PromoCodeScalarFieldEnum | Prisma.PromoCodeScalarFieldEnum[]
 }
 
@@ -1561,6 +1687,30 @@ export type PromoCode$usagesArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.PromoCodeUsageScalarFieldEnum | Prisma.PromoCodeUsageScalarFieldEnum[]
+}
+
+/**
+ * PromoCode.orders
+ */
+export type PromoCode$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+  orderBy?: Prisma.OrderOrderByWithRelationInput | Prisma.OrderOrderByWithRelationInput[]
+  cursor?: Prisma.OrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
 }
 
 /**

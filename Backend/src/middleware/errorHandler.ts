@@ -101,7 +101,6 @@ export const multerErrorHandler = (
       status: 400,
       message: `Upload error: ${err.message}`,
     };
-    console.log(req.files)
     return res.status(error.status).json({
       success: false,
       code: err.code,

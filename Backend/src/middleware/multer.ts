@@ -5,13 +5,11 @@ const storage = multer.diskStorage({
     cb(null, 'uploads')
   },
   filename: function (req, file, cb) {
-    console.log(file)
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     cb(null, file.fieldname + '-' + uniqueSuffix+file.originalname)
   }
 })
 const fileFilter=(req:Request,file:Express.Multer.File,cb:FileFilterCallback)=>{
-  console.log(file)
     const allowedTypes=['image/png','image/jpg','image/svg+xml','image/webp','image/jpeg']
     if(allowedTypes.includes(file.mimetype)){
         cb(null,true)
