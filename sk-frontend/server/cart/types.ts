@@ -1,20 +1,36 @@
+export type CartResponse = {
+  message: string;
+  data: CartItem[];
+};
+
 export type CartItem = {
   id: string;
+  orderId: string | null;
   productId: string;
   quantity: number;
-  deliveryCharge:number;
   size: string;
-  productImageUrl: string;
-  productName: string;
-  ProductColorName: string;
-  Price: number;
   productVariantId: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
+  product: Product;
+  productVariant: ProductVariant;
 };
 
-export type GetCartResponse = {
-  message: string;
-  data: CartItem[];
+export type Product = {
+  id: string;
+  name: string;
+};
+
+export type ProductVariant = {
+  id: string;
+  finalPrice: number;
+  color: string;
+  colorName: string;
+  deliveryCharge: number;
+  images: ProductImage[];
+};
+
+export type ProductImage = {
+  url: string;
 };

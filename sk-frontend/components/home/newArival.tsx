@@ -126,8 +126,8 @@ export default function NewArrivals() {
             paddingTop:10
           }}
         >
-          {isLoading?Array.from({length:5}).map((_,i)=><div key={i} className="bg-zinc-200 h-[400px] w-[300px] animate-pulse"></div>):data?.data.length==0?<></>:data?.data.map((item) => (
-            <ProductCard item={item}/>
+          {isLoading?Array.from({length:5}).map((_,i)=><div key={i} className="bg-zinc-200 h-[400px] w-[300px] animate-pulse"></div>):data?.data.length==0?<></>:data?.data.map((item,i) => (
+            <ProductCard key={i} item={item}/>
           ))}
         </div>
       </div>

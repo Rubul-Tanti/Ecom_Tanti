@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { MdCategory } from "react-icons/md";
+import { MdCategory, MdOutlineLocalOffer } from "react-icons/md";
 import { BiSolidOffer } from "react-icons/bi";
 import Link from "next/link";
 
@@ -59,6 +59,13 @@ const NAV_ITEMS = [
         <circle cx="7.5" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/>
         <path d="M1 14c0-3 3-5 6.5-5s6.5 2 6.5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
       </svg>
+    ),
+  },
+  {
+    label: "Promo Code",
+    href: "/admin/promocode",
+    icon: (
+      <MdOutlineLocalOffer />
     ),
   },
   {

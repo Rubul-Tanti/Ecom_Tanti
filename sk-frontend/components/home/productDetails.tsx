@@ -134,6 +134,8 @@ export default function ProductPage({ slug }: { slug: string }) {
 
   };
 
+
+
   // Price display
   const hasDiscount = activeVariant && activeVariant.discountPercentage > 0;
   const displayPrice =activeVariant?.finalPrice
@@ -153,11 +155,11 @@ export default function ProductPage({ slug }: { slug: string }) {
         return setLoginPopup(true)
       }
       if(!product){return}
-      console.log("pass")
       const variant=product.variants[selectedVariantIdx]
-      addToCart.mutate({deliveryCharge:variant.deliveryCharge,productImageUrl:variant.images.find(img=>img.isPrimary)?.url||variant.images[0].url,colorName:variant.colorName,productName:product.name,productPrice:variant.finalPrice,variantId:variant.id,size:selectedSize,quantity:qty},{onSuccess:()=>{
+      addToCart.mutate({variantId:variant.id,size:selectedSize,quantity:qty},{onSuccess:()=>{
         toast("Added To Cart")
-      },onError:()=>{
+      },onError:(e:any)=>{
+
       }})
 
     }
@@ -196,6 +198,14 @@ export default function ProductPage({ slug }: { slug: string }) {
       </div>
     );
   }
+    const existInCart=()=>{
+      const variant=product.variants[selectedVariantIdx]
+      const variantId=variant.id
+      const exist=data?.existInCart?.includes(variantId)
+      console.log(variantId)
+      console.log(exist)
+      return exist
+  }
 
   return (
     <div className="font-sans bg-gray-50 min-h-screen py-8 px-4">
@@ -207,12 +217,14 @@ export default function ProductPage({ slug }: { slug: string }) {
           {/* Left: gallery */}
           <div className="flex-1 min-w-80">
             {/* Main image */}
-            <div className="bg-[#f0ede8] rounded-xl overflow-hidden mb-3 aspect-square flex items-center justify-center">
+            <div className="bg-[white]  rounded-xl overflow-hidden mb-3 aspect-square flex items-center justify-center">
               {variantImages[activeImg] ? (
-                <img
+                <Image
+                width={256}
+                height={100}
                   src={variantImages[activeImg].url}
                   alt={variantImages[activeImg].altText || product.name}
-                  className="w-full h-full object-cover"
+                  className="max-w-[290px]  lg:max-w-[345px] w-full h-auto"
                   draggable={false}
                 />
               ) : (
@@ -239,7 +251,7 @@ export default function ProductPage({ slug }: { slug: string }) {
                     <img
                       src={img.url}
                       alt={img.altText || `Image ${i + 2}`}
-                      className="object-cover h-full w-full"
+                      className="object-cover h-auto w-full"
                       draggable={false}
                     />
                   </button>
@@ -353,8 +365,8 @@ export default function ProductPage({ slug }: { slug: string }) {
 
             {/* CTA buttons */}
             <div className="flex gap-2.5">
-              <button onClick={handleAddToCart} className="flex-1 py-3 rounded-full border border-gray-300 bg-white font-semibold text-sm text-gray-900 cursor-pointer hover:bg-gray-50 transition-colors">
-                Add to Cart
+              <button disabled={existInCart()} onClick={handleAddToCart} style={{backgroundColor:existInCart()?"#FEF3C7":"white"}}  className="flex-1 py-3 rounded-full    bg-white font-semibold text-sm text-gray-900 cursor-pointer hover:bg-gray-50 transition-colors">
+               {existInCart()?"Added To Cart":"Add to Cart"}
               </button>
               <button className="flex-1 py-3 rounded-full border-none bg-gray-900 font-semibold text-sm text-white cursor-pointer hover:bg-gray-800 transition-colors">
                 Buy Now

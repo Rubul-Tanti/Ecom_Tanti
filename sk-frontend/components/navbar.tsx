@@ -11,9 +11,8 @@ import {
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import { BsBag } from 'react-icons/bs'
-import { FaBorderNone } from 'react-icons/fa'
 import { RiAccountCircle2Line } from 'react-icons/ri'
-import { ChevronDown, LogIn, LogOut, ShieldCheck, ShoppingBag, UserCircle } from 'lucide-react'
+import {  LogIn, LogOut, ShieldCheck, ShoppingBag, UserCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { handleLogout } from '@/server/authentication'
 import { Button } from './ui/button'
@@ -167,11 +166,6 @@ const Navbar = () => {
           {/* Right actions */}
           <div className="flex gap-2">
 
-            {/* Orders */}
-            <button className="flex flex-col items-center justify-center  gap-1">
-              <span className="nb-btn-icon"><ShoppingBag size={16} className="text-gray-400" /></span>
-              <span className="nb-btn-label">Orders</span>
-            </button>
 
 
             {/* Bag */}
@@ -217,12 +211,12 @@ const Navbar = () => {
 
     {user.isAuthenticated ? (
       <>
-        <DropdownMenuItem className="flex items-center gap-2.5 cursor-pointer">
+        <DropdownMenuItem onClick={()=>{router.push("/profile")}} className="flex items-center gap-2.5 cursor-pointer">
           <UserCircle size={16} className="text-gray-400" />
           Profile
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="flex items-center gap-2.5 cursor-pointer">
+        <DropdownMenuItem onClick={()=>router.push("/orders")} className="flex items-center gap-2.5 cursor-pointer">
           <ShoppingBag size={16} className="text-gray-400" />
           Orders
         </DropdownMenuItem>

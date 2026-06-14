@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Heart, Trash2, Minus, Plus, ShoppingBag, Tag, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Heart, Trash2, Minus, Plus, ShoppingBag, Tag, ChevronRight, Check } from "lucide-react";
 import useCart from "@/hooks/use_cart";
 import { CartItem } from "@/server/cart/types";
+import Link from "next/link";
+import { useUserContext } from "@/contextProvider";
+import { useRouter } from "next/navigation";
 
 function Skeleton({ className }: { className?: string }) {
   return (
@@ -69,19 +72,26 @@ function CartRow({
   onRemove,
   onWishlist,
   wishlisted,
+  onSelect,
+  existInOrder
 }: {
+  onSelect:(v:string)=>void,
   item: CartItem;
   onQtyChange: (id: string, delta: number) => void;
   onRemove: (id: string) => void;
   onWishlist: (id: string) => void;
   wishlisted: boolean;
+  existInOrder:(id:string)=>boolean
 }) {
+  const exist=existInOrder(item.id)
   return (
-    <div className="flex gap-4 py-5 border-b border-zinc-100 last:border-0 group">
+
+    <div className="flex gap-4 py-5 border-b border-zinc-100 last:border-0 group relative">
+        <button onClick={()=>onSelect(item.id)} className={`${exist?"bg-zinc-500":"bg-white  border border-zinc-400"} h-4 rounded cursor-pointer top-1 -left-2 w-4 items-center flex justify-center absolute z-50 `}>{exist&&<Check size={12} color='white'/>}</button>
       <div className="relative flex-shrink-0 w-24 h-32 rounded-xl overflow-hidden bg-zinc-100">
         <img
-          src={item.productImageUrl}
-          alt={item.productName}
+          src={item.productVariant.images[0].url}
+          alt={item.product.name}
           className="w-full h-full object-cover object-top"
           draggable={false}
         />
@@ -91,7 +101,7 @@ function CartRow({
         <div className="flex justify-between items-start gap-2">
           <div className="min-w-0">
             <p className="font-semibold text-[15px] text-wrap text-zinc-900 leading-snug truncate">
-              {item.productName}
+              {item.product.name}
             </p>
             <div className="flex items-center gap-3 mt-1">
               <span className="text-xs text-zinc-400 flex bg-zinc-100 px-2 py-0.5 rounded-full">
@@ -101,16 +111,16 @@ function CartRow({
 
                 <span
                   className="inline-block border border-zinc-400 w-3 h-3 rounded-full border border-zinc-200"
-                  style={{ background: item.ProductColorName.toLowerCase() }}
+                  style={{ background: item.productVariant.color.toLowerCase() }}
                 />
-                {item.ProductColorName}
+                {item.productVariant.colorName}
               </span>
             </div>
           </div>
         </div>
 
         <p className="font-bold text-[15px] text-zinc-900 mt-1">
-          ₹{(item.Price * item.quantity).toFixed(2)}
+          ₹{(item.productVariant.finalPrice * item.quantity).toFixed(2)}
         </p>
 
         <div className="flex items-center justify-between mt-3">
@@ -176,12 +186,18 @@ export default function Cart() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [removed, setRemoved] = useState<Set<string>>(new Set());
-  const [promoOpen, setPromoOpen] = useState(false);
-  const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
-
+  const {orderItems:orderSumarryItems,setOrderItems:setOrderSummaryItems}=useUserContext()
   const { getCart, removeFromCart } = useCart();
   const { data, isLoading } = getCart();
+  const router=useRouter()
+
+  useEffect(()=>{
+    if(!isLoading&&data){
+      setOrderSummaryItems(data.data)
+    }
+  },[isLoading,data])
+
 
   const items = (data?.data ?? []).filter((item) => !removed.has(item.id));
 
@@ -195,7 +211,18 @@ export default function Cart() {
       return { ...prev, [id]: next };
     });
   };
-
+    const onSelect=(id:string)=>{
+      const exist=orderSumarryItems.find(item=>item.id===id)
+      if(exist){
+        const filter=orderSumarryItems.filter(item=>item.id!==id)
+        setOrderSummaryItems(filter)
+      }else{
+        const item=items.find(item=>item.id===id)
+        if(item){
+          setOrderSummaryItems([...orderSumarryItems,item])
+        }
+      }
+    }
   const handleRemove = (id: string) => {
     removeFromCart.mutate(id, {
       onSuccess: () => {
@@ -212,14 +239,18 @@ export default function Cart() {
     });
   };
 
-  const subtotal = items.reduce((sum, item) => sum + item.Price * getQty(item), 0);
+  const existInOrder=(id:string)=>{
+    const exist=orderSumarryItems.find(item=>item.id===id)
+    return exist?true:false
+  }
+  const subtotal = orderSumarryItems.reduce((sum, item) => sum + item.productVariant.finalPrice * getQty(item), 0);
   const discount = promoApplied ? subtotal * 0.1 : 0;
-  const delivery = items.reduce((sum, item) => sum + item.deliveryCharge, 0);
+  const delivery = orderSumarryItems.reduce((sum, item) => sum + item.productVariant.deliveryCharge, 0);
   const total = subtotal + delivery - discount;
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans">
-      <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Header */}
         <div className="mb-8">
           {isLoading ? (
@@ -257,6 +288,8 @@ export default function Cart() {
                   onRemove={handleRemove}
                   onWishlist={handleWishlist}
                   wishlisted={wishlist.has(item.id)}
+                  onSelect={onSelect}
+                  existInOrder={existInOrder}
                 />
               ))
             )}
@@ -266,7 +299,7 @@ export default function Cart() {
           {isLoading ? (
             <OrderSummarySkeleton />
           ) : (
-            <div className="w-full lg:w-72 bg-white rounded-2xl shadow-sm border border-zinc-100 p-6 lg:sticky lg:top-10 flex-shrink-0">
+            <div className="min-w-xs lg:w-72 bg-white rounded-2xl shadow-sm border border-zinc-100 p-6 lg:sticky lg:top-10 flex-shrink-0">
               <h2 className="text-lg font-bold text-zinc-900 mb-5">Order Summary</h2>
 
               <div className="space-y-3 text-sm">
@@ -297,43 +330,13 @@ export default function Cart() {
                 <span className="font-bold text-xl text-zinc-900">₹{total.toFixed(2)}</span>
               </div>
 
-              <button className="w-full bg-zinc-900 hover:bg-zinc-700 active:scale-[0.98] text-white rounded-full py-3.5 text-sm font-semibold tracking-wide transition-all flex items-center justify-center gap-2">
-                Checkout
+              <button disabled={orderSumarryItems.length==0} onClick={()=>{
+                orderSumarryItems.length!==0&&router.push("/checkout")
+              }}  className="w-full bg-zinc-900 hover:bg-zinc-700 active:scale-[0.98] text-white rounded-full py-3.5 text-sm font-semibold tracking-wide transition-all flex items-center justify-center gap-2">
+                Proceed To Buy
                 <ChevronRight size={16} />
               </button>
 
-              <div className="mt-4">
-                <button
-                  onClick={() => setPromoOpen(!promoOpen)}
-                  className="w-full flex items-center justify-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 transition-colors py-1"
-                >
-                  <Tag size={13} />
-                  {promoApplied ? "Promo applied ✓" : "Add promo code"}
-                </button>
-
-                {promoOpen && !promoApplied && (
-                  <div className="flex gap-2 mt-3">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                      placeholder="CODE"
-                      className="flex-1 border border-zinc-200 rounded-xl px-3 py-2 text-sm font-mono tracking-wider placeholder:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-                    />
-                    <button
-                      onClick={() => {
-                        if (promoCode.trim()) {
-                          setPromoApplied(true);
-                          setPromoOpen(false);
-                        }
-                      }}
-                      className="bg-zinc-900 text-white rounded-xl px-4 py-2 text-sm font-semibold hover:bg-zinc-700 transition-colors"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>

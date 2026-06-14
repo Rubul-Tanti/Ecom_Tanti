@@ -305,6 +305,7 @@ variantData.append("color", form.color)
 variantData.append("colorName", form.colorName)
 variantData.append("size", form.size)
 variantData.append("price", form.price)
+variantData.append("finalPrice",form.finalPrice)
 variantData.append("discountPercentage", form.discountPercentage)
 
 if (form.discountPrice) {
@@ -595,6 +596,7 @@ function VariantEditor({
           colorName: variant.colorName,
           size: variant.size,
           deliveryCharge:variant.deliveryCharge,
+          finalPrice:variant.finalPrice,
           price: variant.price,
           discountPercentage: variant.discountPercentage,
           discountPrice: variant.discountPrice,
@@ -685,7 +687,9 @@ function VariantEditor({
         </Field>
 
         <Field label="Price">
-          <Input type="number" value={variant.price} onChange={set("price")} />
+          <Input type="number" value={variant.price}
+          onChange={set("price")}
+           />
         </Field>
         <Field label="Final Price">
           <Input type="number" value={variant.finalPrice} onChange={set("finalPrice")} />
