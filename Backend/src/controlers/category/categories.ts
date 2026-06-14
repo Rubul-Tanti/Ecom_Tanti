@@ -119,7 +119,6 @@ export const createCategory = async (req: Request, res: Response): Promise<Respo
     if (slugTaken) {
       return res.status(409).json({ message: 'a category with this name already exists' })
     }
-    console.log("pass")
     const category = await prisma.category.create({
       data: {
         name: data.name,
@@ -301,7 +300,6 @@ export const deleteCategory = async (req: Request, res: Response): Promise<Respo
 
 export const getCategories = async (req: Request, res: Response): Promise<Response> => {
   try {
-    console.log('hit get category')
     const categories = await prisma.category.findMany({
       where: { parentId: null },
       include: INCLUDE_RELATIONS,

@@ -21,10 +21,12 @@ enum UserRole {
 enum OrderStatus {
   PENDING
   CONFIRMED
+  OUT_FOR_DELEVERY
   SHIPPED
   DELIVERED
   CANCELLED
   REFUNDED
+  RETUREND
 }
 
 model User {
@@ -149,9 +151,8 @@ model Product {
   isFeatured Boolean @default(false)
 
   // Relations
-  reviews    Review[]
-  orderItems OrderItem[]
-  tags       Tag[]       @relation("ProductTags")
+  reviews Review[]
+  tags    Tag[]    @relation("ProductTags")
 
   // Denormalized metrics
   averageRating Float? @default(0)
@@ -162,6 +163,7 @@ model Product {
   deletedAt     DateTime?
   cartItems     CartItem[]
   productImages ProductImage[]
+  orderItems    OrderItem[]
 
   @@index([name])
   @@index([deletedAt])
@@ -195,9 +197,10 @@ model ProductVariant {
   deliveryCharge    Int?
   sku               String @unique
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  cartItems CartItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   @@unique([productId, size, color])
   @@index([productId])
@@ -268,20 +271,29 @@ model Tag {
 }
 
 model Order {
-  id     String      @id @default(uuid())
-  status OrderStatus @default(PENDING)
+  id                       String      @id @default(uuid())
+  status                   OrderStatus @default(PENDING)
+  currency                 String?     @default("INR")
+  razorPayPaymentId        String?
+  razorPayOrderId          String
+  razorPayPaymentSignature String?
 
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
-  address   Address @relation(fields: [addressId], references: [id])
-  addressId String
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod String?
 
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  address     Address     @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  addressId   String
   items       OrderItem[]
   totalAmount Float
   notes       String?
+  promoCode   PromoCode?  @relation(fields: [promoCodeId], references: [id])
+  promoCodeId String?
 
   placedAt        DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  cartItems       CartItem[]
   promoCodeUsages PromoCodeUsage[]
 
   @@index([userId])
@@ -289,32 +301,26 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-  quantity  Int
-  unitPrice Float
-  size      String? // Snapshot of selected variant
-  color     String?
-
-  @@index([orderId])
-  @@index([productId])
+  id               String         @id @default(uuid())
+  product          Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId        String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariantId String
+  size             String
+  quantity         Int
+  createdAt        DateTime       @default(now())
+  order            Order?         @relation(fields: [orderId], references: [id])
+  orderId          String?
 }
 
 model CartItem {
-  id               String  @id @default(uuid())
-  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id               String         @id @default(uuid())
+  order            Order?         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId          String?
+  product          Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId        String
-  quantity         Int     @default(1)
-  size             String // Selected variant
-  productImageUrl  String
-  productName      String
-  ProductColorName String
-  Price            Int
-  deliveryCharge   Int?
-
+  quantity         Int            @default(1)
+  size             String
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
   productVariantId String
   user             User           @relation(fields: [userId], references: [id])
@@ -331,6 +337,12 @@ enum EventStatus {
   ACTIVE
   EXPIRED
   CANCELLED
+}
+
+enum PaymentStatus {
+  CANCELLED
+  PENDING
+  PAID
 }
 
 model Event {
@@ -373,15 +385,15 @@ model PromoCode {
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders    Order[]
 }
 
 model PromoCodeUsage {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   promoCodeId String
   userId      String
   orderId     String?
-
-  usedAt DateTime @default(now())
+  usedAt      DateTime @default(now())
 
   promoCode PromoCode @relation(fields: [promoCodeId], references: [id])
   user      User      @relation(fields: [userId], references: [id])

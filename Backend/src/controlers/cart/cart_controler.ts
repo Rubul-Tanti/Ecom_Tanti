@@ -19,12 +19,16 @@ export const addToCart=async(req:Request,res:Response)=>{
         if(!userId){
             return res.status(401).json({message:"unauthorized",error:"user not authorized"})
         }
-        const {variantId,size,quantity,productImageUrl,productName,price,colorName,deliveryCharge}=vr.data
+        const {variantId,size,quantity}=vr.data
+        const alreadyExist=await prisma.cartItem.findFirst({where:{id:variantId,userId}})
+        if(alreadyExist){
+            return res.status(409).json({message:"already added to cart"})
+        }
         const variant=await prisma.productVariant.findUnique({where:{id:variantId}})
         if(!variant){
             return res.status(404).json({message:" product variant not found",})
         }
-        const cartItem=await prisma.cartItem.create({data:{productImageUrl,Price:price,ProductColorName:colorName,deliveryCharge,productName,userId,quantity,size,productId:variant.productId,productVariantId:variant.id}})
+        const cartItem=await prisma.cartItem.create({data:{userId,quantity,size,productId:variant.productId,productVariantId:variant.id}})
         return res.status(201).json({message:"Added To Cart successfully ",data:cartItem})
     }catch(e){
         logger.info("error while Adding product to cart",e)
@@ -39,7 +43,9 @@ export const getCart=async(req:Request,res:Response)=>{
         if(!userId){
             return res.status(401).json({message:"unauthorized",error:"user not authorized"})
         }
-        const cart=await prisma.cartItem.findMany({where:{userId}})
+        const cart=await prisma.cartItem.findMany({where:{userId},include:{product:{select:{id:true,name:true,}},productVariant:{select:{finalPrice:true,color:true,colorName:true,id:true,images:{select:{url:true}},deliveryCharge:true}}}})
+
+
         return res.status(200).json({message:"fetched cart Items successfully",data:cart})
     }
     catch(e){

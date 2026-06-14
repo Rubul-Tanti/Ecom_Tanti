@@ -2,7 +2,6 @@ import { cloudinary } from "../config/cloudinaryConfig"
 import fs from 'fs'
 export const uploadToCloudinary = async (file: Express.Multer.File) => {
     const uniqueName=file.filename
-    console.log(uniqueName)
   const result = await cloudinary.uploader.upload(file.path, {
     folder: "products",
     public_id: file.filename

@@ -23,7 +23,6 @@ export const createEvent=async(req:Request,res:Response)=>{
                 return url
             }
 
-    console.log(vr.data)
     const newEvent=await prisma.event.create({data:{
         ...vr.data,
         thumbnail:getImageUrl('thumnail'),
@@ -39,7 +38,6 @@ export const createEvent=async(req:Request,res:Response)=>{
 }
 export const editEvent=async(req:Request,res:Response)=>{
     try{
-        console.log(req.body)
         const id=req.params.id as string
         const vr=updateEventSchema.safeParse(req.body)
         if(!vr.success){

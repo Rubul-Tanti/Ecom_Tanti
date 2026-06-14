@@ -46,8 +46,6 @@ export const createProduct = async (req: Request, res: Response) => {
     if (!files?.length) {
     return res.status(400).json({message:'atleast one pic is required'})
     }
-    console.log(req.body)
-
     const validationResult = createProductSchema.safeParse(req.body)
 
     if (!validationResult.success) {
@@ -126,7 +124,6 @@ export const createProduct = async (req: Request, res: Response) => {
 export const createImageVariant = async (req: Request, res: Response) => {
   try {
     const file = getUploadedFile(req)
-    console.log('file',file)
     const vr = productImageSchema.safeParse(req.body)
 
     // validate request body first

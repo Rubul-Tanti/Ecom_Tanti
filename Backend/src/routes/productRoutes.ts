@@ -4,7 +4,7 @@ import { createImageVariant, createProduct } from '../controlers/product/createP
 import { asyncError, multerErrorHandler } from '../middleware/errorHandler'
 import { addVariant, deleteProduct, deleteProductVariant, deleteVariantImage, getProduct, updateProduct, updateVariant } from '../controlers/product/updateProduct'
 import authorizationMiddleware from '../middleware/authentication'
-import { getAllProduct } from '../controlers/product/getAllProduct'
+import { getAllProduct, getMostPopular } from '../controlers/product/getAllProduct'
 
  const productRouter=Router()
 productRouter.post('/create',authorizationMiddleware(['ADMIN']),uploadMiddleware.any(),asyncError(createProduct))
@@ -12,6 +12,7 @@ productRouter.post('/:productId/variant',authorizationMiddleware(['ADMIN']),uplo
 productRouter.put('/:id',authorizationMiddleware(['ADMIN']),asyncError(updateProduct))
 productRouter.put('/variant/:id',authorizationMiddleware(['ADMIN']),asyncError(updateVariant))
 productRouter.get('/',authorizationMiddleware([]),asyncError(getAllProduct))
+productRouter.get('/most-popular',authorizationMiddleware([]),asyncError(getMostPopular))
 productRouter.get('/:id',authorizationMiddleware([]),asyncError(getProduct))
 productRouter.post("/variant-image",authorizationMiddleware(['ADMIN']),uploadMiddleware.single('image'),asyncError(createImageVariant))
 productRouter.delete("/variant-image/:id",authorizationMiddleware(['ADMIN']),asyncError(deleteVariantImage))

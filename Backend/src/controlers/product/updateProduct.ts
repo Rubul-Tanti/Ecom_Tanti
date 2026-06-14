@@ -88,9 +88,11 @@ export const updateVariant = async (req: Request, res: Response) => {
 export const getProduct=async(req:Request,res:Response)=>{
     try{
         const id=req.params.id as string;
+        const userId=req.user?.id
         if(!id){
             return res.status(400).json({message:"Product ID is required"})
         }
+
          const product=await prisma.product.findUnique({where:{slug:id,deletedAt:null},include:{variants:{
             include:{images:true}
          }}
@@ -98,7 +100,23 @@ export const getProduct=async(req:Request,res:Response)=>{
         if (!product) {
             return res.status(404).json({ message: "Product not found" })
         }
-        res.status(200).json({message:'successfully fetched product',success:true,data:product})
+        if(userId){
+    const variantIds = product.variants.map(v => v.id);
+
+const existingCartItems = await prisma.cartItem.findMany({
+  where: {
+    userId,
+    productId: product.id,
+    productVariantId: {
+      in: variantIds,
+    },
+  }
+});
+
+const existInCart = existingCartItems.map(item => item.productVariantId);
+        return res.status(200).json({message:'successfully fetched product',success:true,data:product,existInCart})
+    }
+        return res.status(200).json({message:'successfully fetched product',success:true,data:product})
 
     }catch(e){
               if(e instanceof PrismaClientKnownRequestError&&e.code==="p2025"){
