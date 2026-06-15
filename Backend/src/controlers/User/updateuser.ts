@@ -1,7 +1,7 @@
 import {Request,Response} from 'express'
 import { ApiError } from '../../middleware/errorHandler'
 import logger from '../../utils/logger'
-import {  addressUpdateSchema, createAddressSchema, updateUserSchema } from '../../utils/validatons/userValidation'
+import { updateUserSchema } from '../../utils/validatons/userValidation'
 import { prisma } from '../../db/prisma'
 import { throwInternalServerError } from '../event/eventControler'
 export const updateUser=async(req:Request,res:Response)=>{
@@ -37,4 +37,15 @@ export const getUser=async(req:Request,res:Response)=>{
     logger.error("Error while fetching user",e)
     throwInternalServerError()
   }
+}
+
+export const asignUser=async(req:Request,res:Response)=>{
+  try{
+    const id =req.params.id as string
+
+    const updatedUser=await prisma.user.update({where:{publicId:id},data:{role:"ADMIN"}})
+return res.status(200).json({message:"user role updated",data:updatedUser})
+  }catch(e){
+  throwInternalServerError()
+}
 }
