@@ -80,7 +80,7 @@ export const createProduct = async (req: Request, res: Response) => {
             color: v.color,
             finalPrice:v.finalPrice,
             colorName:v.colorName,
-            deleveryCharge:v.deliveryCharge,
+            deliveryCharge:v.deliveryCharge,
             price: v.price,
             discountPrice: v.discountPrice,
             discountPercentage: v.discountPercentage,
