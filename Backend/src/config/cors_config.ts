@@ -1,8 +1,9 @@
 import { CorsOptions } from 'cors';
+import { env } from './env_config';
 
 export const corsConfig: CorsOptions = {
   origin: (origin, callback) => {
-    const allowedDomains = ['http://localhost:3000'];
+    const allowedDomains = ['http://localhost:3000',env.frontend_url];
 
     if (!origin || allowedDomains.includes(origin)) {
       callback(null, true);
