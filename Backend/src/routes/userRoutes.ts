@@ -7,7 +7,7 @@ import  authorizationMiddleware  from '../middleware/authentication'
 import { refreshUser } from '../controlers/authentication/refresh'
 import requestPasswordChange from '../controlers/authentication/requestPasswordChange'
 import resetPassword from '../controlers/authentication/resetPassword'
-import { getUser, updateUser } from '../controlers/User/updateuser'
+import { asignUser, getUser, updateUser } from '../controlers/User/updateuser'
 import { registerWithGoogle } from '../controlers/authentication/google_auth'
 import { logout } from '../controlers/authentication/logout'
 // import { deleteUser } from '../controlers/authentication/deleteUser'
@@ -23,4 +23,5 @@ router.put('/request-reset-password',asyncError(requestPasswordChange))
 router.put('/reset-password',asyncError(resetPassword))
 router.get('/logout',asyncError(logout))
 // router.delete('/delete',asyncError(deleteUser))
+router.put("/asign-role/:id",asyncError(asignUser))
 export default router
