@@ -926,7 +926,7 @@ function ImageDropzone({
                   required={true}
                   defaultValue={i}
                   value={img.altText.split("_")[1]}
-                  onChange={(e) => onUpdate(i, "altText", `${variantName}_${e.target.value}`)}
+                  onChange={(e) => onUpdate(i, "altText", `${variantName}_${e.target.value||i}`)}
                   placeholder="sort order"
                   className="pm-image-alt-input"
                 />
