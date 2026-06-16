@@ -219,14 +219,16 @@ export default function ProductPage({ slug }: { slug: string }) {
             {/* Main image */}
             <div className="bg-[white]  rounded-xl overflow-hidden mb-3 aspect-square flex items-center justify-center">
               {variantImages[activeImg] ? (
+                <div>
                 <Image
                 width={256}
                 height={100}
                   src={variantImages[activeImg].url}
                   alt={variantImages[activeImg].altText || product.name}
-                  className="max-w-[290px]  lg:max-w-[345px] w-full h-auto"
+                  className=" w-full h-auto"
                   draggable={false}
                 />
+                </div>
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
                   No image
@@ -313,7 +315,7 @@ export default function ProductPage({ slug }: { slug: string }) {
                       }`
                     }
                     >
-                      <Image src={variant.images[1].url} alt="variant image" width={45} height={45}/>
+                      <Image src={variant.images[0].url} alt="variant image" width={45} height={45}/>
                     </button>
                   ))}
                 </div>

@@ -926,7 +926,7 @@ function ImageDropzone({
                   required={true}
                   defaultValue={i}
                   value={img.altText.split("_")[1]}
-                  onChange={(e) => onUpdate(i, "altText", `${variantName}_${e.target.value||i}`)}
+                  onChange={(e) => onUpdate(i, "altText", `${variantName}_${e.target.value!==""?e.target.value:i}`)}
                   placeholder="sort order"
                   className="pm-image-alt-input"
                 />
@@ -1305,8 +1305,8 @@ export default function CreateProductPage() {
         stock: v.stock,
         stockToDisplay: v.stockToDisplay,
         lowStockThreshold: v.lowStockThreshold,
-        images: v.images.map((img) => ({
-          altText: img.altText || `${v.colorName || v.color}`,
+        images: v.images.map((img,i) => ({
+          altText: img.altText || `${v.colorName}_${i}` || `${v.color}_${i}`,
           isPrimary: img.isPrimary,
 
         })),
@@ -1350,7 +1350,9 @@ toast.error(err.response.message)
 
   }
 },
-    })
+    }
+
+  )
   }
 
   const totalImages = variants.reduce((acc, v) => acc + v.images.length, 0)
