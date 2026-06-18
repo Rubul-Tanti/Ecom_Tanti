@@ -285,7 +285,7 @@ const logout=async()=>{
   }
 const res=await handleLogout()
 console.log(res)
-setUser({role:null,userName:null,profilePicture:null,isAuthenticated:false,email:null,cartCount:0})
+setUser({role:null,userName:null,profilePicture:null,isAuthenticated:false,email:null,cartCount:0,isLoading:false})
 router.push('/signin')
 }
 

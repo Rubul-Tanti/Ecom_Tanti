@@ -1,6 +1,6 @@
 'use client'
 import { CartItem } from "@/server/cart/types";
-import { createContext, SetStateAction, useContext, useState
+import { createContext, SetStateAction, useContext, useEffect, useState
  } from "react";
  export const initialCartItem: CartItem[] =[ {
   id: "",
@@ -33,7 +33,8 @@ import { createContext, SetStateAction, useContext, useState
          userName:string|null,
         email:string|null,
         profilePicture:string|null,
-        cartCount:number|0
+        cartCount:number|0,
+        isLoading:boolean
  }
  type userContextType={
     orderItems:CartItem[],
@@ -49,22 +50,29 @@ loginPopup:boolean, setLoginPopup:React.Dispatch<SetStateAction<boolean>>
         userName:null,
         email:null,
         profilePicture:null,
-        cartCount:0
+        cartCount:0,
+        isLoading:false
         },
         orderItems:initialCartItem,
+
         setOrderItems:()=>{},
     setUser:()=>{},
     loginPopup:false, setLoginPopup:()=>{}
  })
 
+
 export  const ContextProvider=({children}:{children:React.ReactNode})=>{
      const [loginPopup, setLoginPopup] = useState(false);
     const [user,setUser]=useState<UserType>({isAuthenticated:false,role:null,userName:null,
         email:null,
-        profilePicture:null,cartCount:0})
+        profilePicture:null,cartCount:0,isLoading:false})
         const [orderItems,setOrderItems]=useState<CartItem[]>([])
+      useEffect(()=>{
+        const token=localStorage.getItem('access_token')
+        setUser((prev)=>({...prev,isLoading:token?true:false}))
+      },[])
 
-    return <UserContext value={{orderItems,setOrderItems,user,setUser,loginPopup,setLoginPopup}}>{children}</UserContext>
+        return <UserContext value={{orderItems,setOrderItems,user,setUser,loginPopup,setLoginPopup}}>{children}</UserContext>
 }
 
 export const useUserContext=()=>{
