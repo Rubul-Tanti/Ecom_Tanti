@@ -11,8 +11,8 @@ export default function NewArrivals() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const {getProducts}=useProduct()
-   const { data, isLoading, error } = getProducts(
+  const {getNewArivalDashboard}=useProduct()
+   const { data, isLoading, error } = getNewArivalDashboard(
     20,
     "",
     1,
@@ -126,7 +126,16 @@ export default function NewArrivals() {
             paddingTop:10
           }}
         >
-          {isLoading?Array.from({length:5}).map((_,i)=><div key={i} className="bg-zinc-200 h-[400px] w-[300px] animate-pulse"></div>):data?.data.length==0?<></>:data?.data.map((item,i) => (
+          {isLoading?Array.from({length:5}).map((_,i)=><div
+  key={i}
+  className="w-[300px] animate-pulse rounded-xl border bg-white p-4 shadow-sm"
+>
+  <div className="h-56 w-full rounded-lg bg-zinc-200" />
+  <div className="mt-4 h-5 w-3/4 rounded bg-zinc-200" />
+  <div className="mt-2 h-4 w-1/2 rounded bg-zinc-200" />
+  <div className="mt-4 h-6 w-1/3 rounded bg-zinc-200" />
+  <div className="mt-6 h-10 w-full rounded-lg bg-zinc-200" />
+</div>):data?.data.length==0?<></>:data?.data.map((item,i) => (
             <ProductCard key={i} item={item}/>
           ))}
         </div>

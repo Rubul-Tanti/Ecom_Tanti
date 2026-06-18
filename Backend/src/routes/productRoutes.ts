@@ -4,9 +4,11 @@ import { createImageVariant, createProduct } from '../controlers/product/createP
 import { asyncError, multerErrorHandler } from '../middleware/errorHandler'
 import { addVariant, deleteProduct, deleteProductVariant, deleteVariantImage, getProduct, updateProduct, updateVariant } from '../controlers/product/updateProduct'
 import authorizationMiddleware from '../middleware/authentication'
-import { getAllProduct, getMostPopular } from '../controlers/product/getAllProduct'
+import { getAllProduct, getAllProductNewArival, getMostPopular, getMostPopularDashboard } from '../controlers/product/getAllProduct'
 
- const productRouter=Router()
+const productRouter=Router()
+productRouter.get('/most-popular-dashboard',authorizationMiddleware([]),asyncError(getMostPopularDashboard))
+productRouter.get('/new-arival-dashboard',authorizationMiddleware([]),asyncError(getAllProductNewArival))
 productRouter.post('/create',authorizationMiddleware(['ADMIN']),uploadMiddleware.any(),asyncError(createProduct))
 productRouter.post('/:productId/variant',authorizationMiddleware(['ADMIN']),uploadMiddleware.any(),asyncError(addVariant))
 productRouter.put('/:id',authorizationMiddleware(['ADMIN']),asyncError(updateProduct))

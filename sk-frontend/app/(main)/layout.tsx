@@ -23,7 +23,7 @@ export default function RootLayout({
           {/* Main content (takes remaining width) */}
           <main className="flex-1 min-w-0 overflow-x-hidden">
             {children}
-            {!user.isAuthenticated&&
+            {!user.isAuthenticated&&!user.isLoading&&
             <LoginPopout/>}
           </main>
         </div>

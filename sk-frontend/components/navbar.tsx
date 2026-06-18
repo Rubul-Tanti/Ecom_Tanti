@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import { handleLogout } from '@/server/authentication'
 import { Button } from './ui/button'
 import { CgProfile } from 'react-icons/cg'
+import { Skeleton } from './ui/skeleton'
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -33,9 +34,10 @@ const Navbar = () => {
       return router.push('/signin')
     }
   const res=await handleLogout()
-  setUser({role:null,userName:null,profilePicture:null,isAuthenticated:false,email:null,cartCount:0})
+  setUser({role:null,userName:null,profilePicture:null,isAuthenticated:false,email:null,cartCount:0,isLoading:false})
   router.push('/signin')
   }
+  console.log(user)
   return (
     <>
       <style>{`
@@ -180,73 +182,67 @@ const Navbar = () => {
 
             {/* Profile */}
             <div >
+            {user?.isLoading ? (
+              <Skeleton className="w-10 h-10 rounded-full" />
+            ) : user?.isAuthenticated ? (
            <DropdownMenu>
-    {user?.isAuthenticated ?
-  <DropdownMenuTrigger className="flex hover:bg-gray-100 items-center justify-center gap-0 cursor-pointer outline-0 h-10">
-     {user.profilePicture?
-      <Image src={user.profilePicture} width={30} height={30} className="rounded-full" alt="profile" />
-    :<CgProfile size={30}/>}
-  </DropdownMenuTrigger>
-     : (
-      <Button onClick={()=>{router.push("/signin")}}>Sign In</Button>
-    )}
+      <DropdownMenuTrigger className="flex hover:bg-gray-100 items-center justify-center gap-0 cursor-pointer outline-0 h-10">
+         {user.profilePicture?
+          <Image src={user.profilePicture} width={30} height={30} className="rounded-full" alt="profile" />
+        :<CgProfile size={30}/>}
+      </DropdownMenuTrigger>
 
-  <DropdownMenuContent align="end" className="w-56">
-    {/* Header */}
-    <div className="px-3 py-2.5 flex items-center gap-2.5">
-      {user?.profilePicture ? (
-        <Image src={user.profilePicture} width={36} height={36} className="rounded-full" alt="profile" />
-      ) : (
-        <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-          <RiAccountCircle2Line className="text-blue-500" size={20} />
+      <DropdownMenuContent align="end" className="w-56">
+        {/* Header */}
+        <div className="px-3 py-2.5 flex items-center gap-2.5">
+          {user?.profilePicture ? (
+            <Image src={user.profilePicture} width={36} height={36} className="rounded-full" alt="profile" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+              <RiAccountCircle2Line className="text-blue-500" size={20} />
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-medium text-sm truncate">{user?.userName ?? "Guest"}</p>
+            <p className="text-xs text-gray-500 truncate">{user?.email ?? "Not signed in"}</p>
+          </div>
         </div>
-      )}
-      <div className="min-w-0">
-        <p className="font-medium text-sm truncate">{user?.userName ?? "Guest"}</p>
-        <p className="text-xs text-gray-500 truncate">{user?.email ?? "Not signed in"}</p>
-      </div>
-    </div>
-
-    <DropdownMenuSeparator />
-
-    {user.isAuthenticated ? (
-      <>
-        <DropdownMenuItem onClick={()=>{router.push("/profile")}} className="flex items-center gap-2.5 cursor-pointer">
-          <UserCircle size={16} className="text-gray-400" />
-          Profile
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={()=>router.push("/orders")} className="flex items-center gap-2.5 cursor-pointer">
-          <ShoppingBag size={16} className="text-gray-400" />
-          Orders
-        </DropdownMenuItem>
-
-        {user?.role === "ADMIN" && (
-          <DropdownMenuItem className="flex items-center gap-2.5 cursor-pointer" onClick={() => router.push('/admin')}>
-            <ShieldCheck size={16} className="text-gray-400" />
-            Admin panel
-            <span className="ml-auto text-[11px] bg-red-50 text-red-500 px-1.5 py-0.5 rounded font-medium">
-              Admin
-            </span>
-          </DropdownMenuItem>
-        )}
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="flex items-center gap-2.5 text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer" onClick={logout}>
-          <LogOut size={16} />
-          Log out
-        </DropdownMenuItem>
-      </>
-    ) : (
-      <DropdownMenuItem className="flex items-center gap-2.5 text-blue-500 focus:text-blue-500 focus:bg-blue-50 cursor-pointer font-medium" onClick={() => router.push('/signin')}>
-        <LogIn size={16} />
-        Sign in
-      </DropdownMenuItem>
-    )}
-  </DropdownMenuContent>
-</DropdownMenu>
+        <>
+          <DropdownMenuItem onClick={()=>{router.push("/profile")}} className="flex items-center gap-2.5 cursor-pointer">
+            <UserCircle size={16} className="text-gray-400" />
+            Profile
+          </DropdownMenuItem>
 
+          <DropdownMenuItem onClick={()=>router.push("/orders")} className="flex items-center gap-2.5 cursor-pointer">
+            <ShoppingBag size={16} className="text-gray-400" />
+            Orders
+          </DropdownMenuItem>
+
+          {user?.role === "ADMIN" && (
+            <DropdownMenuItem className="flex items-center gap-2.5 cursor-pointer" onClick={() => router.push('/admin')}>
+              <ShieldCheck size={16} className="text-gray-400" />
+              Admin panel
+              <span className="ml-auto text-[11px] bg-red-50 text-red-500 px-1.5 py-0.5 rounded font-medium">
+                Admin
+              </span>
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem className="flex items-center gap-2.5 text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer" onClick={logout}>
+            <LogOut size={16} />
+            Log out
+          </DropdownMenuItem>
+        </>
+      </DropdownMenuContent>
+    </DropdownMenu>
+            ) : (
+              <Button onClick={()=>{router.push("/signin")}}>Sign In</Button>
+            )}
             </div>
 
           </div>

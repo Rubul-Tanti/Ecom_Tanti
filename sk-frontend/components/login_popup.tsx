@@ -56,7 +56,8 @@ export default function LoginPopout() {
                email:v.data.data.email,
                userName:v.data.data.userName,
                profilePicture:v.data.data.profilePicture,
-               cartCount:v.data.data.cartCount
+               cartCount:v.data.data.cartCount,
+               isLoading:false
              })
 
            },onError:(e:any)=>{
@@ -89,7 +90,8 @@ export default function LoginPopout() {
               email:v.data.data.email,
               userName:v.data.data.userName,
               profilePicture:v.data.data.profilePicture
-            ,cartCount:v.data.data.cartCount
+            ,cartCount:v.data.data.cartCount,
+            isLoading:false
             })
             setLoading(false)
                 setIsOpen(false);

@@ -15,6 +15,16 @@ export const handleGetProducts=async({limit,categoryName,page,search,isActive}:{
     const res=await api.get(`/api/product?${query}`)
 return res.data as GetProductsResponse
 }
+export const handleGetProductsDashboard=async({limit,categoryName,page,search,isActive}:{limit:number,categoryName:string,page:number,search:string,isActive:boolean|'All'})=>{
+    const query=new URLSearchParams()
+    if(isActive!=='All'){query.append('isActive',JSON.stringify(isActive))}
+    if(search){query.append("productslug",search)}
+    if(limit){query.append("limit",limit.toString())}
+    if(page){query.append("page",page.toString())}
+    if(categoryName){query.append("categoryName",categoryName)}
+    const res=await api.get(`/api/product/new-arival-dashboard?${query}`)
+return res.data as GetProductsResponse
+}
 export const handleGetProductById=async(id:string)=>{
     const res=await api.get(`/api/product/${id}`)
     return res.data as GetProductResponse
@@ -61,5 +71,13 @@ export const handleGetMostPopular=async({limit,categoryName,page}:{limit:number,
     if(page){query.append("page",page.toString())}
     if(categoryName){query.append("categoryName",categoryName)}
     const res=await api.get(`/api/product/most-popular?${query}`)
+    return res.data as GetProductsResponse
+}
+export const handleGetMostPopularDashboard=async({limit,categoryName,page}:{limit:number,categoryName?:string,page:number})=>{
+    const query=new URLSearchParams()
+    if(limit){query.append("limit",limit.toString())}
+    if(page){query.append("page",page.toString())}
+    if(categoryName){query.append("categoryName",categoryName)}
+    const res=await api.get(`/api/product/most-popular-dashboard?${query}`)
     return res.data as GetProductsResponse
 }

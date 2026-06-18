@@ -27,7 +27,8 @@ export default function Login() {
           email:v.data.data.email,
           userName:v.data.data.userName,
           profilePicture:v.data.data.profilePicture
-          ,cartCount:v.data.data.cartCount
+          ,cartCount:v.data.data.cartCount,
+          isLoading:false
         })
         setLoading(false)
       },onError:(e:any)=>{
@@ -52,7 +53,8 @@ export default function Login() {
           email:v.data.data.email,
           userName:v.data.data.userName,
           cartCount:v.data.data.cartCount,
-          profilePicture:v.data.data.profilePicture
+          profilePicture:v.data.data.profilePicture,
+          isLoading:false
         })
       },onError:(e:any)=>{
         if(e.response){

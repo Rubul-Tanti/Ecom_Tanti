@@ -8,6 +8,7 @@ import { useUserContext } from "@/contextProvider";
 import useCart from "@/hooks/use_cart";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 
 interface Review {
@@ -100,7 +101,8 @@ function Skeleton({ className }: { className?: string }) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function ProductPage({ slug }: { slug: string }) {
-  const {user,setLoginPopup}=useUserContext()
+  const {user,setLoginPopup,setOrderItems}=useUserContext()
+  const router=useRouter()
   const [activeImg, setActiveImg] = useState(0);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('S');
@@ -205,6 +207,33 @@ export default function ProductPage({ slug }: { slug: string }) {
       console.log(variantId)
       console.log(exist)
       return exist
+  }
+  const handleBuy=()=>{
+    const variant=product.variants[selectedVariantIdx]
+    const data ={id:"",
+  orderId: null,
+  productId: product.id,
+  quantity: qty,
+  size:selectedSize,
+  productVariantId:variant.id,
+  userId:"",
+  createdAt: "",
+  updatedAt: "",
+  product: {
+    id: product.id,
+    name:product.name,
+  },
+
+  productVariant: {
+    id:variant.id,
+    finalPrice:variant.finalPrice,
+    color: variant.color,
+    colorName:variant.colorName,
+    deliveryCharge: variant.deliveryCharge,
+    images:variant.images,
+  }}
+  setOrderItems([data])
+  router.push("/checkout")
   }
 
   return (
@@ -370,7 +399,7 @@ export default function ProductPage({ slug }: { slug: string }) {
               <button disabled={existInCart()} onClick={handleAddToCart} style={{backgroundColor:existInCart()?"#FEF3C7":"white"}}  className="flex-1 py-3 rounded-full    bg-white font-semibold text-sm text-gray-900 cursor-pointer hover:bg-gray-50 transition-colors">
                {existInCart()?"Added To Cart":"Add to Cart"}
               </button>
-              <button className="flex-1 py-3 rounded-full border-none bg-gray-900 font-semibold text-sm text-white cursor-pointer hover:bg-gray-800 transition-colors">
+              <button onClick={()=>{!user.isAuthenticated?setLoginPopup(true):handleBuy()}} className="flex-1 py-3 rounded-full border-none bg-gray-900 font-semibold text-sm text-white cursor-pointer hover:bg-gray-800 transition-colors">
                 Buy Now
               </button>
             </div>

@@ -92,7 +92,7 @@ export default function Register() {
     const Otp=otp.reduce((accumulator,currentVallue)=>accumulator+currentVallue)
           otpVerifation.mutate({...form,otp:Otp},{onSuccess:(v)=>{
             const data=v.data.data
-            setUser({role:data.role,userName:data.userName,email:data.email,profilePicture:data.profilePicture,isAuthenticated:true,cartCount:data.cartCount})
+            setUser({role:data.role,userName:data.userName,email:data.email,profilePicture:data.profilePicture,isAuthenticated:true,cartCount:data.cartCount,isLoading:false})
             localStorage.setItem('access_token',v.data.access_token)
           toast('user created successfully')
           setStep(3)
@@ -116,7 +116,8 @@ export default function Register() {
           email:v.data.data.email,
           cartCount:v.data.data._cart.count,
           userName:v.data.data.userName,
-          profilePicture:v.data.data.profilePicture
+          profilePicture:v.data.data.profilePicture,
+          isLoading:false
         })
         setStep(3)
       },onError:(e:any)=>{
